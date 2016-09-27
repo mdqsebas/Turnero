@@ -1,0 +1,91 @@
+unit servidorforma;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  ScktComp, ComCtrls, StdCtrls;
+
+type
+  TfrmServidor = class(TForm)
+    mmClientes: TMemo;
+    StatusBar1: TStatusBar;
+    ServerSocket1: TServerSocket;
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure ServerSocket1ClientRead(Sender: TObject;
+      Socket: TCustomWinSocket);
+    procedure ServerSocket1ClientConnect(Sender: TObject;
+      Socket: TCustomWinSocket);
+    procedure ServerSocket1ClientDisconnect(Sender: TObject;
+      Socket: TCustomWinSocket);
+    procedure ServerSocket1Listen(Sender: TObject;
+      Socket: TCustomWinSocket);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmServidor: TfrmServidor;
+
+implementation
+
+{$R *.DFM}
+
+procedure TfrmServidor.FormCreate(Sender: TObject);
+begin
+
+  ServerSocket1.Active := True;
+
+end;
+
+procedure TfrmServidor.FormDestroy(Sender: TObject);
+begin
+
+  ServerSocket1.Active := False;
+
+end;
+
+procedure TfrmServidor.ServerSocket1ClientRead(Sender: TObject;
+  Socket: TCustomWinSocket);
+var
+  sMensaje, sDeCabeza : String;
+  i : Integer;
+begin
+
+  sMensaje := Socket.ReceiveText;
+  sDeCabeza := '';
+
+  // Este for invierte los caracteres del mensaje
+  for i := Length(sMensaje) downto 0 do
+     sDeCabeza := sDeCabeza + sMensaje[i];
+
+  mmClientes.Lines.Add('"'+sMensaje+'"' + ' de cabeza es "'+sDeCabeza+'"');
+  // Envía el menaje "al revés" de regreso al cliente.
+  Socket.SendText(sDeCabeza);
+
+end;
+
+procedure TfrmServidor.ServerSocket1ClientConnect(Sender: TObject;
+  Socket: TCustomWinSocket);
+begin
+  mmClientes.Lines.Add('Conexión');
+end;
+
+procedure TfrmServidor.ServerSocket1ClientDisconnect(Sender: TObject;
+  Socket: TCustomWinSocket);
+begin
+  mmClientes.Lines.Add('Desconección');
+end;
+
+procedure TfrmServidor.ServerSocket1Listen(Sender: TObject;
+  Socket: TCustomWinSocket);
+begin
+
+  StatusBar1.Panels.Items[0].Text := 'Escuchando...';
+
+end;
+
+end.

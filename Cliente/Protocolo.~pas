@@ -1,0 +1,17 @@
+unit Protocolo;
+
+interface
+
+type
+
+            typedef = enum {Siguiente, Anterior, Reiniciar} TComandos;
+        TPaquete = record
+          Comando: TComandos;
+          Mostrador: string;
+        end;
+
+implementation
+
+
+end.
+ 
